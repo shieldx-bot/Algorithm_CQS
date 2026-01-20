@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,32 +20,44 @@ type VPStype struct {
 	TotalQueue int
 	Ra         float64
 	Ramax      float64
+	PCT        float64
 }
 
 var VPS = []VPStype{
-	{IP: "1", FreeQueue: 10, TotalQueue: 100, Ra: 100, Ramax: 120},
-	{IP: "2", FreeQueue: 70, TotalQueue: 100, Ra: 90, Ramax: 120},
-	{IP: "3", FreeQueue: 60, TotalQueue: 100, Ra: 80, Ramax: 120},
+	{IP: "1", FreeQueue: 10, TotalQueue: 100, Ra: 100, Ramax: 120, PCT: 0},
+	{IP: "2", FreeQueue: 70, TotalQueue: 100, Ra: 90, Ramax: 120, PCT: 0},
+	{IP: "3", FreeQueue: 60, TotalQueue: 100, Ra: 80, Ramax: 120, PCT: 0},
 }
 
-func calculatePnew(Pold, Pnew float64, freeQueue, totalQueue int, Ra, Ramax float64) float64 {
+func calculatePnew(Pold float64, Pnew float64) string {
 
 	var CP float64
-	if Pold == 0 {
-		Pold = 1
+	var VPSS []VPStype
+	for _, server := range VPS {
+		if Pold == 0 {
+			Pold = 1
+		}
+
+		Pnew = Pold*0.7 + Pnew*0.3
+		CP = (Pnew - Pold) / (Pold + e)
+
+		var QP float64
+		QP = 1.0 - float64(server.FreeQueue)/float64(server.TotalQueue)
+
+		var SR = server.Ra / server.Ramax
+		var PCT float64
+		PCT = (A * CP) + (B * QP) - (C * SR)
+		if PCT < 0 {
+			server.PCT = PCT
+		}
+		VPSS = append(VPSS, server)
 	}
-
-	Pnew = Pold*0.7 + Pnew*0.3
-	CP = (Pnew - Pold) / (Pold + e)
-
-	var QP float64
-	QP = 1.0 - float64(freeQueue)/float64(totalQueue)
-
-	var SR = Ra / Ramax
-	var PCT float64
-	PCT = (A * CP) + (B * QP) - (C * SR)
-
-	return PCT
+	sort.Slice(VPSS, func(i, j int) bool {
+		return VPSS[i].PCT < VPSS[j].PCT
+	})
+	var best VPStype
+	best = VPSS[0]
+	return best.IP
 
 }
 
