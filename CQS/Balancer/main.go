@@ -237,7 +237,7 @@ func main() {
 			c.JSON(500, gin.H{"error": "Internal Server Error"})
 			return
 		}
-		URL := "http://" + server[0].IP + ":8080/process"
+		URL := "http://" + server[0].IP + ":5000/process"
 		jsonData["backend_url"] = URL
 
 		req, err := http.NewRequest(http.MethodPost, URL, nil)
