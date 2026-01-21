@@ -1,80 +1,129 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
-	"sort"
+	"log"
+	"os"
+
+	"github.com/gin-gonic/gin"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/joho/godotenv"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
-var (
-	A float64 = 0.8
-	B float64 = 0.1
-	C float64 = 0.1
-	e float64 = 0.000001
-)
+type ExampleRecord struct {
+	ID            int    `json:"id"`
+	USERNAME      string `json:"username"`
+	EMAIL         string `json:"email"`
+	PASSWORD_HASH string `json:"password_hash"`
+	BALANCE       int64  `json:"balance"`
+	IS_ACTIVE     bool   `json:"is_active"`
+	CREATED_AT    string `json:"created_at"`
+	UPDATED_AT    string `json:"updated_at"`
+}
 
-func calculatePnew(Pold, Pnew float64, freeQueue, totalQueue int, Ra, Ramax float64) float64 {
+func ExecuteSQLQery(query string, db *sql.DB) ([]*structpb.Struct, error) {
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var record []ExampleRecord
+	for rows.Next() {
+		var r ExampleRecord
+		if err := rows.Scan(&r.ID, &r.USERNAME, &r.EMAIL, &r.PASSWORD_HASH, &r.BALANCE, &r.IS_ACTIVE, &r.CREATED_AT, &r.UPDATED_AT); err != nil {
+			return nil, err
+		}
+		record = append(record, r)
 
-	var CP float64
-	if Pold == 0 {
-		Pold = 1
 	}
 
-	Pnew = Pold*0.7 + Pnew*0.3
-	CP = (Pnew - Pold) / (Pold + e)
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
-	var QP float64
-	QP = 1.0 - float64(freeQueue)/float64(totalQueue)
+	var results []*structpb.Struct
+	for _, r := range record {
+		// structpb only supports JSON-like scalars; normalize ints to float64.
+		rowMap := map[string]interface{}{
+			"id":            float64(r.ID),
+			"username":      r.USERNAME,
+			"email":         r.EMAIL,
+			"password_hash": r.PASSWORD_HASH,
+			"balance":       float64(r.BALANCE),
+			"is_active":     r.IS_ACTIVE,
+			"created_at":    r.CREATED_AT,
+			"updated_at":    r.UPDATED_AT,
+		}
 
-	var SR = Ra / Ramax
-	var PCT float64
-	PCT = (A * CP) + (B * QP) - (C * SR)
+		st, err := structpb.NewStruct(rowMap)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, st)
+	}
 
-	return PCT
+	return results, nil
 
 }
 func main() {
-
-	type VPStype struct {
-		IP         string
-		FreeQueue  int
-		TotalQueue int
-		Ra         float64
-		Ramax      float64
+	router := gin.Default()
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file, proceeding with environment variables")
 	}
-	type Clienttype struct {
-		Pold float64
-		Pnew float64
+	var host_database = os.Getenv("LAMINAR_DB_HOST")
+	var port_database = os.Getenv("LAMINAR_DB_PORT")
+	var user_database = os.Getenv("LAMINAR_DB_USER")
+	var password_database = os.Getenv("LAMINAR_DB_PASSWORD")
+	var name_database = os.Getenv("LAMINAR_DB_NAME")
+
+	fmt.Println("Starting Laminar Proxy Server...")
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host_database, port_database, user_database, password_database, name_database)
+	db, err := sql.Open("pgx", connStr)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+	//
+	db.SetMaxOpenConns(200)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(0)
+
+	if err := db.Ping(); err != nil {
+		fmt.Println("DB Fail:", err)
+	} else {
+		fmt.Println("Connected to DB successfully")
 	}
 
-	Cients := []Clienttype{
-		{Pold: 10, Pnew: 12},
+	type ProcessRequest struct {
+		Query string `json:"query"`
 	}
-
-	VPS := []VPStype{
-		{IP: "1", FreeQueue: 10, TotalQueue: 100, Ra: 100, Ramax: 120},
-		{IP: "2", FreeQueue: 70, TotalQueue: 100, Ra: 90, Ramax: 120},
-		{IP: "3", FreeQueue: 60, TotalQueue: 100, Ra: 80, Ramax: 120},
-	}
-	_ = VPS
-	type ResultType struct {
-		ClientIndex int
-		VPIndex     int
-		PCT         float64
-	}
-	var Results []ResultType
-
-	for i, v := range Cients {
-
-		for j, u := range VPS {
-			pct := calculatePnew(v.Pold, v.Pnew, u.FreeQueue, u.TotalQueue, u.Ra, u.Ramax)
-			Results = append(Results, ResultType{ClientIndex: i, VPIndex: j, PCT: pct})
+	router.POST("/process", func(c *gin.Context) {
+		var jsonData ProcessRequest
+		if err := c.ShouldBindJSON(&jsonData); err != nil {
+			c.JSON(400, gin.H{
+				"status": "error",
+				"error":  err.Error(),
+			})
+			return
 		}
-		sort.Slice(Results, func(i, j int) bool {
-			return Results[i].PCT < Results[j].PCT
-		})
-		best := Results[0]
-		fmt.Printf("\n Best VPS for Client %d is VPS %d with PCT = %f \n", best.ClientIndex, best.VPIndex, best.PCT)
-		Results = nil
-	}
 
+		results, err := ExecuteSQLQery(jsonData.Query, db)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"status": "error",
+				"error":  err.Error(),
+			})
+			return
+		}
+
+		fmt.Printf("Received JSON: %v\n", jsonData)
+		c.JSON(200, gin.H{
+			"status": "processed",
+			"data":   results,
+		})
+	})
+	router.Run(":5000")
 }
