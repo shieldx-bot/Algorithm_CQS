@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -67,6 +68,21 @@ func ExecuteSQLQery(query string, db *sql.DB) ([]*structpb.Struct, error) {
 	return results, nil
 
 }
+
+type MetrixBackend struct {
+	TotalQueue int64   `json:"total_queue"`
+	FreeQueue  int64   `json:"free_queue"`
+	Ra         float64 `json:"ra"`
+	Ramax      float64 `json:"ramax"`
+}
+
+var MetrixFeedBackend = MetrixBackend{
+	TotalQueue: 100,
+	FreeQueue:  100,
+	Ra:         100,
+	Ramax:      120,
+}
+
 func main() {
 	router := gin.Default()
 	err := godotenv.Load()
@@ -98,7 +114,9 @@ func main() {
 	}
 
 	type ProcessRequest struct {
-		Query string `json:"query"`
+		Query     string    `json:"query"`
+		CP        float64   `json:"cp"`
+		TimeStart time.Time `json:"time_start"`
 	}
 	router.POST("/process", func(c *gin.Context) {
 		var jsonData ProcessRequest
@@ -121,8 +139,9 @@ func main() {
 
 		fmt.Printf("Received JSON: %v\n", jsonData)
 		c.JSON(200, gin.H{
-			"status": "processed",
-			"data":   results,
+			"status":     "processed",
+			"data":       results,
+			"time_start": jsonData.TimeStart,
 		})
 	})
 	router.Run(":5000")
