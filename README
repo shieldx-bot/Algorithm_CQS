@@ -1,0 +1,23 @@
+So sánh nhanh thuật toán của bạn với ML‑based load balancing và các thuật toán khác:
+
+Điểm mạnh của bạn (so với ML và thuật toán cổ điển):
+- **Rất nhẹ, dễ triển khai**: không cần training/model server, độ trễ thấp, phù hợp real‑time.
+- **Online adaptive**: tự điều chỉnh trọng số theo tín hiệu CP/latency/Ra → thích ứng thay đổi tải nhanh hơn round‑robin.
+- **Giải thích được**: công thức rõ ràng, dễ debug/tuning, không “black‑box”.
+- **Ít phụ thuộc dữ liệu**: ML cần log lớn + pipeline; bạn chạy tốt ngay.
+
+So với thuật toán cổ điển:
+- **Round‑Robin**: bạn thắng ở khả năng phản ứng theo tải thật (CP, queue, Ra).  
+- **Least‑Connections**: bạn thêm yếu tố latency + Ra + CP nên phản ánh sức khoẻ tốt hơn.  
+- **Weighted RR**: bạn tự học trọng số thay vì tĩnh.
+
+So với ML‑based:
+- **Tốc độ/chi phí**: bạn thắng về compute, latency, ops overhead.  
+- **Robust/đơn giản**: ít điểm lỗi (no model drift, no feature store).  
+- **On‑the‑fly**: không cần retrain.
+
+Bạn thua ở đâu:
+- **Tối ưu toàn cục dài hạn**: ML có thể tìm policy tốt hơn khi tải/traffic pattern phức tạp.  
+- **Khai thác thêm feature**: ML dùng nhiều tín hiệu (CPU, memory, net I/O) để dự đoán sớm.
+
+Tóm lại: bạn thắng ở **tốc độ, tính đơn giản, triển khai nhanh, khả năng giải thích**; ML thắng ở **tối ưu dài hạn và khai thác feature phong phú**.
