@@ -21,3 +21,298 @@ Bạn thua ở đâu:
 - **Khai thác thêm feature**: ML dùng nhiều tín hiệu (CPU, memory, net I/O) để dự đoán sớm.
 
 Tóm lại: bạn thắng ở **tốc độ, tính đơn giản, triển khai nhanh, khả năng giải thích**; ML thắng ở **tối ưu dài hạn và khai thác feature phong phú**.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=========================================================
+
+
+Có. Và **ngoài CPU usage**, bạn còn **một tập metrics “ít nhiễu – reviewer tin – deployment-scoped”** mà bạn **NÊN lấy**, với **PromQL tương tự** (không join phức tạp, không node-level).
+
+Tôi chia **rõ 3 nhóm**:
+👉 *Rất sạch* → *Sạch nếu dùng đúng* → *Không nên dùng*
+
+---
+
+
+sum(
+  rate(container_cpu_usage_seconds_total{
+    namespace="client-ns",
+    pod=~"client-.*",
+    container!="POD"
+  }[1m])
+)
+
+
+
+
+
+
+## I. NHÓM RẤT SẠCH (KHUYẾN NGHỊ LẤY)
+
+### 1. **Memory Working Set (deployment-level)**
+
+> Ít nhiễu hơn CPU, rất ổn định.
+
+```promql
+sum(
+  container_memory_working_set_bytes{
+    namespace="backend-ns",
+    pod=~"backend-.*",
+    container!="POD"
+  }
+)
+```
+
+**Dùng để:**
+
+* So sánh footprint
+* Phân tích memory efficiency
+* Giải thích OOM / eviction
+
+📌 Reviewer **rất thích** metric này.
+
+---
+
+### 2. **Memory RSS (thay thế nếu cần)**
+
+```promql
+sum(
+  container_memory_rss{
+    namespace="backend-ns",
+    pod=~"backend-.*",
+    container!="POD"
+  }
+)
+```
+
+➡ Ít phổ biến hơn working set, nhưng **chấp nhận được**.
+
+---
+
+### 3. **CPU time per request (RẤT ĐẸP CHO PAPER)**
+
+Nếu bạn có metric request (ví dụ HTTP):
+
+```promql
+sum(
+  rate(container_cpu_usage_seconds_total{
+    namespace="backend-ns",
+    pod=~"backend-.*",
+    container!="POD"
+  }[1m])
+)
+/
+sum(
+  rate(http_requests_total{
+    namespace="backend-ns",
+    pod=~"backend-.*"
+  }[1m])
+)
+```
+
+**Ý nghĩa:**
+
+> CPU-seconds / request
+
+➡ Metric **rất mạnh về efficiency**, ít reviewer bắt bẻ.
+
+---
+
+## II. NHÓM SẠCH NẾU DÙNG ĐÚNG
+
+### 4. **Network throughput (deployment-level)**
+
+```promql
+sum(
+  rate(container_network_receive_bytes_total{
+    namespace="client-ns",
+    pod=~"client-.*"
+  }[1m])
+)
+```
+
+và
+
+```promql
+sum(
+  rate(container_network_transmit_bytes_total{
+    namespace="client-ns",
+    pod=~"client-.*"
+  }[1m])
+)
+```
+
+**Lưu ý:**
+
+* Dùng để **giải thích**, không nên làm metric chính
+* Phù hợp nếu:
+
+  * load balancing
+  * microservices
+
+---
+
+### 5. **Pod restart rate (rất sạch)**
+
+```promql
+sum(
+  increase(kube_pod_container_status_restarts_total{
+    namespace="client-ns",
+    pod=~"client-.*"
+  }[10m])
+)
+```
+
+➡ Không nhiễu, phản ánh **stability**.
+
+---
+
+## III. APPLICATION-LEVEL (ÍT NHIỄU NHẤT – NẾU BẠN CÓ)
+
+> Nếu có **application metrics**, ưu tiên hơn cả CPU.
+
+### 6. **Latency (p95 / p99)**
+
+Ví dụ Prometheus histogram:
+
+```promql
+histogram_quantile(
+  0.95,
+  sum by (le)(
+    rate(http_request_duration_seconds_bucket{
+      namespace="client-ns",
+      pod=~"client-.*"
+    }[1m])
+  )
+)
+```
+
+➡ Đây là **metric “vàng”** trong paper.
+
+---
+
+### 7. **Throughput**
+
+```promql
+sum(
+  rate(http_requests_total{
+    namespace="client-ns",
+    pod=~"client-.*"
+  }[1m])
+)
+```
+
+---
+
+## IV. NHỮNG THỨ KHÔNG NÊN DÙNG (DÙ CÓ DATA)
+
+❌ Node CPU / Node memory
+❌ Load average
+❌ Pod đơn lẻ (không aggregate)
+❌ Instant value (không rate / window)
+
+Reviewer **rất hay bắt bẻ** các metric này.
+
+---
+
+## V. BỘ METRIC “CHUẨN PAPER” TỐI THIỂU (GỢI Ý)
+
+Nếu bạn hỏi: *“Lấy bao nhiêu là đủ?”*
+→ **5 cái sau là quá đủ**:
+
+1. CPU usage (deployment)
+2. Memory working set
+3. Latency p95
+4. Throughput
+5. CPU / request
+
+Với bộ này, reviewer **khó bác**.
+
+---
+
+## VI. Kết luận dứt khoát
+
+* ✔ Ngoài CPU, **memory working set** là sạch nhất
+* ✔ **CPU / request** là metric rất mạnh
+* ✔ Application-level metrics **ít nhiễu nhất**
+* ❌ Không cần node-level metric
+* ✔ Tất cả PromQL trên **không cần join phức tạp**
+
+---
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Luồng xử lý (viết lại rõ ràng, đúng với bản cải tiến “latency penalty + top‑k Po2”)
+
+Khởi tạo:
+- `Check = 0`
+- Mỗi backend `j` có trạng thái đọc từ Redis: `FreeQueue_j, TotalQueue_j, ...`
+- Balancer duy trì `EWMA_Latency_j(t)` (đo RTT thực tế balancer→backend)
+
+Với mỗi request i từ client tại thời điểm t:
+1) Nhận request:
+- Input từ client: `CP_i(t)` (signal global) + payload/query
+
+2) Chuẩn hoá tín hiệu global:
+- `cpNorm = clamp(CP_i(t), 0, 1)`
+
+3) Tính điểm cho từng backend j:
+- Lấy state từ Redis:
+  - `QP_j(t) = 1 - FreeQueue_j(t)/TotalQueue_j(t)`  (util/queue pressure)
+- Lấy latency penalty từ EWMA do balancer đo:
+  - `LP_j(t) = clamp(EWMA_Latency_j(t) / latencyScaleMs, 0, 1)`
+- Tính “điểm áp lực” (càng nhỏ càng tốt):
+  - `PCT_j(t) = α*cpNorm + β*QP_j(t) + γ*LP_j(t)`
+
+4) Lọc danh sách backend hợp lệ:
+- Chỉ giữ backend có `TotalQueue_j > 0` và `FreeQueue_j > 0`
+- Nếu không còn backend hợp lệ → trả lỗi (hoặc fallback tuỳ bạn)
+
+5) Chọn backend theo “top‑k + power‑of‑two”:
+- Sort backend theo `PCT` tăng dần
+- Lấy tập ứng viên `S = topK(PCT)` (k backend có PCT tốt nhất)
+- Random chọn 2 backend `u, v` trong `S`
+- Chọn `best = argmin(PCT_u, PCT_v)`
+
+6) Route request:
+- Forward request tới `best`
+
+7) Cập nhật EWMA latency (feedback):
+- Đo RTT request vừa forward:
+  - `RTT_best = now - start`
+- Cập nhật:
+  - `EWMA_Latency_best(t) = α_ewma*RTT_best + (1-α_ewma)*EWMA_Latency_best(t-1)`
+- Nếu request lỗi/timeout thì coi như latency rất lớn để tăng penalty.
+
+Ghi chú quan trọng (so với luồng bạn đưa):
+- Luồng hiện tại **không dùng ngưỡng “PCT <= 0 thì route, else throttle/drop”**. Thay vào đó: luôn chọn backend có PCT nhỏ nhất trong top‑k (Po2), vì PCT là thước đo tương đối giữa backend.
+- Fallback “random 1 server” chỉ cần khi:
+  - không đo được latency cho backend nào (mới start) và/hoặc
+  - không lấy được state Redis (hiếm), hoặc n=1.
+
+Nếu bạn muốn giữ logic “PCT threshold → throttle/drop”, mình có thể giúp bạn thêm một ngưỡng kiểu `if minPCT > THRESHOLD then throttle` (ví dụ dựa trên `QP` và `LP`), nhưng thường paper/load balancer sẽ ổn hơn nếu “always route to best available” + “retry backend #2 khi 429/5xx”.
