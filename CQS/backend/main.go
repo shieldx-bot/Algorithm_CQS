@@ -25,7 +25,23 @@ var JobChannel = make(chan Job, 1000)
 var RaOld float64 = 0.0001
 var RaNew float64 = 0.0001
 var rdbLocal *redis.Client
-var Apsilon float64 = 0.05
+var Apsilon float64 = 0.02
+
+var weightCooldown = 45 * time.Second
+var lastWeightUpdate time.Time
+
+func loadTuning() {
+	if v := os.Getenv("WEIGHT_EPSILON"); v != "" {
+		if f, err := strconv.ParseFloat(v, 64); err == nil && f > 0 && f <= 0.2 {
+			Apsilon = f
+		}
+	}
+	if v := os.Getenv("WEIGHT_COOLDOWN_SEC"); v != "" {
+		if s, err := strconv.Atoi(v); err == nil && s >= 5 {
+			weightCooldown = time.Duration(s) * time.Second
+		}
+	}
+}
 
 type ExampleRecord struct {
 	ID            int    `json:"id"`
@@ -215,6 +231,9 @@ func StartWorker() {
 	for {
 		job := <-JobChannel
 		_ = job
+		if !lastWeightUpdate.IsZero() && time.Since(lastWeightUpdate) < weightCooldown {
+			continue
+		}
 		if job.Action > 1.70 {
 			val, err := rdbLocal.HGet(
 				context.Background(),
@@ -238,6 +257,7 @@ func StartWorker() {
 				panic(err)
 			}
 			normalizeWeights()
+			lastWeightUpdate = time.Now()
 			continue
 		} else if job.Action > 1.40 {
 			val, err := rdbLocal.HGet(
@@ -262,6 +282,7 @@ func StartWorker() {
 				panic(err)
 			}
 			normalizeWeights()
+			lastWeightUpdate = time.Now()
 			continue
 		}
 	}
@@ -304,6 +325,7 @@ func main() {
 	if err != nil {
 		log.Println("Error loading .env file, proceeding with environment variables")
 	}
+	loadTuning()
 	var rdb = redis.NewClient(&redis.Options{
 		Addr: "redis.postgre-db.svc.cluster.local:6379",
 	})
@@ -353,8 +375,24 @@ func main() {
 	})
 	router.POST("/process", func(c *gin.Context) {
 		metrixMu.Lock()
+		if MetrixFeedBackend.FreeQueue <= 0 {
+			metrixMu.Unlock()
+			c.JSON(429, gin.H{
+				"status": "error",
+				"error":  "backend queue full",
+			})
+			return
+		}
 		MetrixFeedBackend.FreeQueue--
 		metrixMu.Unlock()
+		defer func() {
+			metrixMu.Lock()
+			MetrixFeedBackend.FreeQueue++
+			if MetrixFeedBackend.FreeQueue > MetrixFeedBackend.TotalQueue {
+				MetrixFeedBackend.FreeQueue = MetrixFeedBackend.TotalQueue
+			}
+			metrixMu.Unlock()
+		}()
 		var jsonData ProcessRequest
 
 		if err := c.ShouldBindJSON(&jsonData); err != nil {
@@ -375,7 +413,6 @@ func main() {
 		}
 		metrixMu.Lock()
 		MetrixFeedBackend.RequestDone++
-		MetrixFeedBackend.FreeQueue++
 		metrixMu.Unlock()
 
 		fmt.Printf("Received JSON: %v\n", jsonData)
