@@ -1,0 +1,867 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  backend
+  namespace: backend-ns
+  labels:
+    app:  backend
+spec:
+  selector:
+    matchLabels:
+      app:  backend
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  backend 
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  backend
+        image:  shieldxbot/backend:v0.0.11
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: LAMINAR_PROXY_HOST
+          value: "postgres.postgre-db.svc.cluster.local"
+        - name: LAMINAR_DB_HOST
+          value: "postgres"
+        - name: LAMINAR_DB_PORT
+          value: "5432"
+        - name: LAMINAR_DB_NAME
+          value: "laminar"
+        - name: LAMINAR_DB_USER
+          value: "laminar"
+        - name: LAMINAR_DB_PASSWORD
+          value: "Vananh12345"  
+        - name : LAMINAR_REDIS_HOST
+          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+        - name : LAMINAR_REDIS_PORT
+          value: "6379"
+        - name: "MY_IP_PUBLIC"
+          value: "backend.backend-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_HOST
+          value: "balancer.balancer-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_PORT
+          value: "8085"
+        ports: 
+        - containerPort:  5000
+          name:  backend
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+
+ 
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  backend2
+  namespace: backend2-ns
+  labels:
+    app:  backend2
+spec:
+  selector:
+    matchLabels:
+      app:  backend2
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  backend2
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  backend2
+        image:  shieldxbot/backend:v0.0.11
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: LAMINAR_PROXY_HOST
+          value: "postgres.postgre-db.svc.cluster.local"
+        - name: LAMINAR_DB_HOST
+          value: "postgres"
+        - name: LAMINAR_DB_PORT
+          value: "5432"
+        - name: LAMINAR_DB_NAME
+          value: "laminar"
+        - name: LAMINAR_DB_USER
+          value: "laminar"
+        - name: LAMINAR_DB_PASSWORD
+          value: "Vananh12345"  
+        - name : LAMINAR_REDIS_HOST
+          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+        - name : LAMINAR_REDIS_PORT
+          value: "6379"
+        - name: "MY_IP_PUBLIC"
+          value: "backend2.backend2-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_HOST
+          value: "balancer.balancer-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_PORT
+          value: "8085"
+        ports: 
+        - containerPort:  5000
+          name:  backend2
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  backend3
+  namespace: backend3-ns
+  labels:
+    app:  backend3
+spec:
+  selector:
+    matchLabels:
+      app:  backend3
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  backend3
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  backend3
+        image:  shieldxbot/backend:v0.0.11
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: LAMINAR_PROXY_HOST
+          value: "postgres.postgre-db.svc.cluster.local"
+        - name: LAMINAR_DB_HOST
+          value: "postgres"
+        - name: LAMINAR_DB_PORT
+          value: "5432"
+        - name: LAMINAR_DB_NAME
+          value: "laminar"
+        - name: LAMINAR_DB_USER
+          value: "laminar"
+        - name: LAMINAR_DB_PASSWORD
+          value: "Vananh12345"  
+        - name : LAMINAR_REDIS_HOST
+          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+        - name : LAMINAR_REDIS_PORT
+          value: "6379"
+        - name: "MY_IP_PUBLIC"
+          value: "backend3.backend3-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_HOST
+          value: "balancer.balancer-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_PORT
+          value: "8085"
+        ports: 
+        - containerPort:  5000
+          name:  backend3
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  backend4
+  namespace: backend4-ns
+  labels:
+    app:  backend4
+spec:
+  selector:
+    matchLabels:
+      app:  backend4
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  backend4
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  backend4
+        image:  shieldxbot/backend:v0.0.11
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: LAMINAR_PROXY_HOST
+          value: "postgres.postgre-db.svc.cluster.local"
+        - name: LAMINAR_DB_HOST
+          value: "postgres"
+        - name: LAMINAR_DB_PORT
+          value: "5432"
+        - name: LAMINAR_DB_NAME
+          value: "laminar"
+        - name: LAMINAR_DB_USER
+          value: "laminar"
+        - name: LAMINAR_DB_PASSWORD
+          value: "Vananh12345"  
+        - name : LAMINAR_REDIS_HOST
+          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+        - name : LAMINAR_REDIS_PORT
+          value: "6379"
+        - name: "MY_IP_PUBLIC"
+          value: "backend4.backend4-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_HOST
+          value: "balancer.balancer-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_PORT
+          value: "8085"
+        ports: 
+        - containerPort:  5000
+          name:  backend4
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+---
+ 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  backend5
+  namespace: backend5-ns
+  labels:
+    app:  backend5
+spec:
+  selector:
+    matchLabels:
+      app:  backend5
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  backend5
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  backend5
+        image:  shieldxbot/backend:v0.0.11
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: LAMINAR_PROXY_HOST
+          value: "postgres.postgre-db.svc.cluster.local"
+        - name: LAMINAR_DB_HOST
+          value: "postgres"
+        - name: LAMINAR_DB_PORT
+          value: "5432"
+        - name: LAMINAR_DB_NAME
+          value: "laminar"
+        - name: LAMINAR_DB_USER
+          value: "laminar"
+        - name: LAMINAR_DB_PASSWORD
+          value: "Vananh12345"  
+        - name : LAMINAR_REDIS_HOST
+          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+        - name : LAMINAR_REDIS_PORT
+          value: "6379"
+        - name: "MY_IP_PUBLIC"
+          value: "backend5.backend5-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_HOST
+          value: "balancer.balancer-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_PORT
+          value: "8085"
+        ports: 
+        - containerPort:  5000
+          name:  backend5
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  backend6
+  namespace: backend6-ns
+  labels:
+    app:  backend6
+spec:
+  selector:
+    matchLabels:
+      app:  backend6
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  backend6
+    spec:
+      containers:
+      - name:  backend6
+        image:  shieldxbot/backend:v0.0.11
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: LAMINAR_PROXY_HOST
+          value: "postgres.postgre-db.svc.cluster.local"
+        - name: LAMINAR_DB_HOST
+          value: "postgres"
+        - name: LAMINAR_DB_PORT
+          value: "5432"
+        - name: LAMINAR_DB_NAME
+          value: "laminar"
+        - name: LAMINAR_DB_USER
+          value: "laminar"
+        - name: LAMINAR_DB_PASSWORD
+          value: "Vananh12345"  
+        - name : LAMINAR_REDIS_HOST
+          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+        - name : LAMINAR_REDIS_PORT
+          value: "6379"
+        - name: "MY_IP_PUBLIC"
+          value: "backend6.backend6-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_HOST
+          value: "balancer.balancer-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_PORT
+          value: "8085"
+        ports: 
+        - containerPort:  5000
+          name:  backend6
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  backend7
+  namespace: backend7-ns
+  labels:
+    app:  backend7
+spec:
+  selector:
+    matchLabels:
+      app:  backend7
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  backend7
+    spec:
+      containers:
+      - name:  backend7
+        image:  shieldxbot/backend:v0.0.11
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: LAMINAR_PROXY_HOST
+          value: "postgres.postgre-db.svc.cluster.local"
+        - name: LAMINAR_DB_HOST
+          value: "postgres"
+        - name: LAMINAR_DB_PORT
+          value: "5432"
+        - name: LAMINAR_DB_NAME
+          value: "laminar"
+        - name: LAMINAR_DB_USER
+          value: "laminar"
+        - name: LAMINAR_DB_PASSWORD
+          value: "Vananh12345"  
+        - name : LAMINAR_REDIS_HOST
+          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+        - name : LAMINAR_REDIS_PORT
+          value: "6379"
+        - name: "MY_IP_PUBLIC"
+          value: "backend7.backend7-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_HOST
+          value: "balancer.balancer-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_PORT
+          value: "8085"
+        ports: 
+        - containerPort:  5000
+          name:  backend7
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  backend8
+  namespace: backend8-ns
+  labels:
+    app:  backend8
+spec:
+  selector:
+    matchLabels:
+      app:  backend8
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  backend8
+    spec:
+      containers:
+      - name:  backend8
+        image:  shieldxbot/backend:v0.0.11
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: LAMINAR_PROXY_HOST
+          value: "postgres.postgre-db.svc.cluster.local"
+        - name: LAMINAR_DB_HOST
+          value: "postgres"
+        - name: LAMINAR_DB_PORT
+          value: "5432"
+        - name: LAMINAR_DB_NAME
+          value: "laminar"
+        - name: LAMINAR_DB_USER
+          value: "laminar"
+        - name: LAMINAR_DB_PASSWORD
+          value: "Vananh12345"  
+        - name : LAMINAR_REDIS_HOST
+          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+        - name : LAMINAR_REDIS_PORT
+          value: "6379"
+        - name: "MY_IP_PUBLIC"
+          value: "backend8.backend8-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_HOST
+          value: "balancer.balancer-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_PORT
+          value: "8085"
+        ports: 
+        - containerPort:  5000
+          name:  backend8
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  backend9
+  namespace: backend9-ns
+  labels:
+    app:  backend9
+spec:
+  selector:
+    matchLabels:
+      app:  backend9
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  backend9
+    spec:
+      containers:
+      - name:  backend9
+        image:  shieldxbot/backend:v0.0.11
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: LAMINAR_PROXY_HOST
+          value: "postgres.postgre-db.svc.cluster.local"
+        - name: LAMINAR_DB_HOST
+          value: "postgres"
+        - name: LAMINAR_DB_PORT
+          value: "5432"
+        - name: LAMINAR_DB_NAME
+          value: "laminar"
+        - name: LAMINAR_DB_USER
+          value: "laminar"
+        - name: LAMINAR_DB_PASSWORD
+          value: "Vananh12345"  
+        - name : LAMINAR_REDIS_HOST
+          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+        - name : LAMINAR_REDIS_PORT
+          value: "6379"
+        - name: "MY_IP_PUBLIC"
+          value: "backend9.backend9-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_HOST
+          value: "balancer.balancer-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_PORT
+          value: "8085"
+        ports: 
+        - containerPort:  5000
+          name:  backend9
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  backend10
+  namespace: backend10-ns
+  labels:
+    app:  backend10
+spec:
+  selector:
+    matchLabels:
+      app:  backend10
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  backend10
+    spec:
+      containers:
+      - name:  backend10
+        image:  shieldxbot/backend:v0.0.11
+        resources:
+          requests:
+            cpu: 300m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: LAMINAR_PROXY_HOST
+          value: "postgres.postgre-db.svc.cluster.local"
+        - name: LAMINAR_DB_HOST
+          value: "postgres"
+        - name: LAMINAR_DB_PORT
+          value: "5432"
+        - name: LAMINAR_DB_NAME
+          value: "laminar"
+        - name: LAMINAR_DB_USER
+          value: "laminar"
+        - name: LAMINAR_DB_PASSWORD
+          value: "Vananh12345"  
+        - name : LAMINAR_REDIS_HOST
+          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+        - name : LAMINAR_REDIS_PORT
+          value: "6379"
+        - name: "MY_IP_PUBLIC"
+          value: "backend10.backend10-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_HOST
+          value: "balancer.balancer-ns.svc.cluster.local"
+        - name: LAMINAR_BALANCER_PORT
+          value: "8085"
+        ports: 
+        - containerPort:  5000
+          name:  backend10
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+---
