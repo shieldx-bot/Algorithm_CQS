@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/services/preview/redis/mgmt/2019-07-01-preview/redis"
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 )
 
 type Backend struct {
@@ -70,4 +70,8 @@ func (b *Backend) AgeUpdater() {
 			b.Redis.HSet(ctx, "node:"+b.ID+":jobs", id, age)
 		}
 	}
+}
+
+func main() {
+
 }
