@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/services/preview/redis/mgmt/2019-07-01-preview/redis"
+	"github.com/redis/go-redis/v9"
 )
 
 type LoadBalancer struct {
@@ -125,4 +125,8 @@ func (lb *LoadBalancer) selectBackend() string {
 		return n1
 	}
 	return n2
+}
+
+func main() {
+
 }
