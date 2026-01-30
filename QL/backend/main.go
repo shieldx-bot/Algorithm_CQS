@@ -7,27 +7,12 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
 )
-
-func createRedisClient() *redis.Client {
-	addr := os.Getenv("LAMINAR_REDIS_HOST")
-	if strings.HasPrefix(addr, "redis://") {
-		opt, err := redis.ParseURL(addr)
-		if err != nil {
-			log.Fatalf("Invalid redis URL: %v", err)
-		}
-		return redis.NewClient(opt)
-	}
-	return redis.NewClient(&redis.Options{
-		Addr: addr,
-	})
-}
 
 type BackendType struct {
 	ID    string
@@ -36,9 +21,11 @@ type BackendType struct {
 }
 
 var Backend BackendType = BackendType{
-	ID:    os.Getenv("BACKEND_ID"),
-	Beta:  0.1,
-	Redis: createRedisClient(),
+	ID:   os.Getenv("BACKEND_ID"),
+	Beta: 0.1,
+	Redis: redis.NewClient(&redis.Options{
+		Addr: "redis.postgre-db.svc.cluster.local:6379",
+	}),
 }
 
 func (b *BackendType) HandleRequest(w http.ResponseWriter, r *http.Request) {
@@ -106,9 +93,6 @@ func main() {
 	if id := os.Getenv("BACKEND_ID"); id != "" {
 		Backend.ID = id
 	}
-
-	// Register backend to Redis so balancer knows it exists
-	Backend.Redis.SAdd(context.Background(), "nodes:active", Backend.ID)
 
 	http.HandleFunc("/query", Backend.HandleRequest)
 	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
