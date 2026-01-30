@@ -1,17 +1,17 @@
 bbalancer:
-	docker build -t shieldxbot/balancer:v0.1.19 -f QL/balancer/Dockerfile QL/balancer
-	docker push shieldxbot/balancer:v0.1.19
+	docker build -t shieldxbot/balancer:v0.1.21 -f QL/balancer/Dockerfile QL/balancer
+	docker push shieldxbot/balancer:v0.1.21
 
 
 
 bbclient: 
-	docker build -t shieldxbot/client:v0.1.19 -f QL/client/Dockerfile QL/client
-	docker push shieldxbot/client:v0.1.19
+	docker build -t shieldxbot/client:v0.1.21 -f QL/client/Dockerfile QL/client
+	docker push shieldxbot/client:v0.1.21
 
 
 bbackend: 
-	docker build -t shieldxbot/backend:v0.1.19 -f QL/backend/Dockerfile QL/backend
-	docker push shieldxbot/backend:v0.1.19
+	docker build -t shieldxbot/backend:v0.1.21 -f QL/backend/Dockerfile QL/backend
+	docker push shieldxbot/backend:v0.1.21
 
 delete:
 	kubectl delete -f kubernetes/Deployment/Balancer/Deployment.yaml
