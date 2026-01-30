@@ -7,10 +7,12 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"os"
 	"sort"
 	"sync/atomic"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -22,7 +24,7 @@ var (
 
 func init() {
 	rdb = redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: os.Getenv("LAMINAR_REDIS_HOST"),
 	})
 }
 
@@ -162,9 +164,13 @@ func requestWorker() {
 }
 
 func sendRequest() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file, proceeding with environment variables")
+	}
 	start := time.Now()
 	// Gửi request tới Balancer
-	resp, err := http.Get("http://localhost:8090/query")
+	resp, err := http.Get("http://" + os.Getenv("LAMINAR_BALANCER_HOST") + ":" + os.Getenv("LAMINAR_BALANCER_PORT") + "/query")
 	latency := float64(time.Since(start).Milliseconds())
 
 	if err != nil {
