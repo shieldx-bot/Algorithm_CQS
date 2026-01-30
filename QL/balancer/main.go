@@ -98,6 +98,11 @@ func (lb *LoadBalancer) ControlLoop() {
 		ctx := context.Background()
 		nodes, _ := lb.Redis.SMembers(ctx, "nodes:active").Result()
 
+		if len(nodes) == 0 {
+			// log.Println("No active nodes found")
+			continue
+		}
+
 		states := make(map[string]float64)
 		for _, id := range nodes {
 			states[id] = lb.ComputeState(id)
@@ -109,6 +114,11 @@ func (lb *LoadBalancer) ControlLoop() {
 			if x > maxX {
 				maxX = x
 			}
+		}
+
+		// Debug log (throttled)
+		if rand.Float64() < 0.05 { // 5% chance to log (~1 per 4s)
+			log.Printf("Nodes: %v, States: %v, MaxX: %f", nodes, states, maxX)
 		}
 
 		for id, x := range states {
