@@ -17,7 +17,7 @@
 
 ## kubectl -n monitoring delete pod prometheus-monitoring-kube-prometheus-prometheus-0
 
-
+kubectl delete pod prometheus-monitoring-kube-prometheus-prometheus-0 -n monitoring --grace-period=0 --force
 
 
 
