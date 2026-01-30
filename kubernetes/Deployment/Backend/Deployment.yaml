@@ -26,14 +26,14 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend
-        image:  shieldxbot/backend:v0.1.19
+        image:  shieldxbot/backend:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 5000
@@ -117,14 +117,14 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend2
-        image:  shieldxbot/backend:v0.1.19
+        image:  shieldxbot/backend:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 5000
@@ -208,14 +208,14 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend3
-        image:  shieldxbot/backend:v0.1.19
+        image:  shieldxbot/backend:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 5000
@@ -296,14 +296,14 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend4
-        image:  shieldxbot/backend:v0.1.19
+        image:  shieldxbot/backend:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 5000
@@ -385,14 +385,14 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend5
-        image:  shieldxbot/backend:v0.1.19
+        image:  shieldxbot/backend:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 5000
@@ -469,14 +469,14 @@ spec:
     spec:
       containers:
       - name:  backend6
-        image:  shieldxbot/backend:v0.1.19
+        image:  shieldxbot/backend:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 5000
@@ -553,14 +553,14 @@ spec:
     spec:
       containers:
       - name:  backend7
-        image:  shieldxbot/backend:v0.1.19
+        image:  shieldxbot/backend:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 5000
@@ -637,14 +637,14 @@ spec:
     spec:
       containers:
       - name:  backend8
-        image:  shieldxbot/backend:v0.1.19
+        image:  shieldxbot/backend:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 5000
@@ -721,14 +721,14 @@ spec:
     spec:
       containers:
       - name:  backend9
-        image:  shieldxbot/backend:v0.1.19
+        image:  shieldxbot/backend:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 5000
@@ -805,14 +805,14 @@ spec:
     spec:
       containers:
       - name:  backend10
-        image:  shieldxbot/backend:v0.1.19
+        image:  shieldxbot/backend:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 5000
