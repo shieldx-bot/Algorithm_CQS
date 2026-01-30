@@ -94,6 +94,9 @@ func main() {
 		Backend.ID = id
 	}
 
+	// Register backend to Redis so balancer knows it exists
+	Backend.Redis.SAdd(context.Background(), "nodes:active", Backend.ID)
+
 	http.HandleFunc("/query", Backend.HandleRequest)
 	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong backend: " + Backend.ID))

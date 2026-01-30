@@ -32,6 +32,10 @@ var lb LoadBalancer = LoadBalancer{
 
 func (lb *LoadBalancer) HandleClient(w http.ResponseWriter, r *http.Request) {
 	backendID := lb.selectBackend()
+	if backendID == "" {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		return
+	}
 
 	// Thống kê số lần chọn backend (chạy async để không chặn request chính)
 	go func(id string) {
@@ -119,6 +123,10 @@ func (lb *LoadBalancer) ControlLoop() {
 func (lb *LoadBalancer) selectBackend() string {
 	ctx := context.Background()
 	nodes, _ := lb.Redis.SMembers(ctx, "nodes:active").Result()
+
+	if len(nodes) == 0 {
+		return ""
+	}
 
 	if len(nodes) == 1 {
 		return nodes[0]

@@ -164,10 +164,6 @@ func requestWorker() {
 }
 
 func sendRequest() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Error loading .env file, proceeding with environment variables")
-	}
 	start := time.Now()
 	// Gửi request tới Balancer
 	resp, err := http.Get("http://" + os.Getenv("LAMINAR_BALANCER_HOST") + ":" + os.Getenv("LAMINAR_BALANCER_PORT") + "/query")
@@ -189,6 +185,11 @@ func sendRequest() {
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file, proceeding with environment variables")
+	}
+
 	// Start background worker sending requests
 	go requestWorker()
 	// Start metrics worker
