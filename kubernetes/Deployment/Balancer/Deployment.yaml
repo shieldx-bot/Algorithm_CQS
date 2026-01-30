@@ -67,7 +67,7 @@ spec:
         - name : LAMINAR_REDIS_HOST
           value: "redis://redis.postgre-db.svc.cluster.local"
         - name : LAMINAR_REDIS_PORT
-          value: "6380"
+          value: "6379"
         - name: "MY_IP_PUBLIC"
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
