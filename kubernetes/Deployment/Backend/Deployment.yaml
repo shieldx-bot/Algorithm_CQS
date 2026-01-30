@@ -26,7 +26,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend
-        image:  shieldxbot/backend:v0.1.16
+        image:  shieldxbot/backend:v0.1.19
         resources:
           requests:
             cpu: 300m
@@ -69,7 +69,7 @@ spec:
         - name : LAMINAR_REDIS_PORT
           value: "6379"
         - name: "BACKEND_ID"
-          value: "backend.backend-ns.svc.cluster.local"
+          value: "backend.backend-ns.svc.cluster.local:5000"
         - name: LAMINAR_BALANCER_HOST
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_PORT
@@ -117,7 +117,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend2
-        image:  shieldxbot/backend:v0.1.16
+        image:  shieldxbot/backend:v0.1.19
         resources:
           requests:
             cpu: 300m
@@ -160,7 +160,7 @@ spec:
         - name : LAMINAR_REDIS_PORT
           value: "6379"
         - name: "BACKEND_ID"
-          value: "backend2.backend2-ns.svc.cluster.local"
+          value: "backend2.backend2-ns.svc.cluster.local:5000"
         - name: LAMINAR_BALANCER_HOST
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_PORT
@@ -208,7 +208,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend3
-        image:  shieldxbot/backend:v0.1.16
+        image:  shieldxbot/backend:v0.1.19
         resources:
           requests:
             cpu: 300m
@@ -251,7 +251,7 @@ spec:
         - name : LAMINAR_REDIS_PORT
           value: "6379"
         - name: "BACKEND_ID"
-          value: "backend3.backend3-ns.svc.cluster.local"
+          value: "backend3.backend3-ns.svc.cluster.local:5000"
         - name: LAMINAR_BALANCER_HOST
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_PORT
@@ -296,7 +296,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend4
-        image:  shieldxbot/backend:v0.1.16
+        image:  shieldxbot/backend:v0.1.19
         resources:
           requests:
             cpu: 300m
@@ -339,7 +339,7 @@ spec:
         - name : LAMINAR_REDIS_PORT
           value: "6379"
         - name: "BACKEND_ID"
-          value: "backend4.backend4-ns.svc.cluster.local"
+          value: "backend4.backend4-ns.svc.cluster.local:5000"
         - name: LAMINAR_BALANCER_HOST
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_PORT
@@ -385,7 +385,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend5
-        image:  shieldxbot/backend:v0.1.16
+        image:  shieldxbot/backend:v0.1.19
         resources:
           requests:
             cpu: 300m
@@ -428,7 +428,7 @@ spec:
         - name : LAMINAR_REDIS_PORT
           value: "6379"
         - name: "BACKEND_ID"
-          value: "backend5.backend5-ns.svc.cluster.local"
+          value: "backend5.backend5-ns.svc.cluster.local:5000"
         - name: LAMINAR_BALANCER_HOST
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_PORT
@@ -469,7 +469,7 @@ spec:
     spec:
       containers:
       - name:  backend6
-        image:  shieldxbot/backend:v0.1.16
+        image:  shieldxbot/backend:v0.1.19
         resources:
           requests:
             cpu: 300m
@@ -512,7 +512,7 @@ spec:
         - name : LAMINAR_REDIS_PORT
           value: "6379"
         - name: "BACKEND_ID"
-          value: "backend6.backend6-ns.svc.cluster.local"
+          value: "backend6.backend6-ns.svc.cluster.local:5000"
         - name: LAMINAR_BALANCER_HOST
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_PORT
@@ -553,7 +553,7 @@ spec:
     spec:
       containers:
       - name:  backend7
-        image:  shieldxbot/backend:v0.1.16
+        image:  shieldxbot/backend:v0.1.19
         resources:
           requests:
             cpu: 300m
@@ -596,7 +596,7 @@ spec:
         - name : LAMINAR_REDIS_PORT
           value: "6379"
         - name: "BACKEND_ID"
-          value: "backend7.backend7-ns.svc.cluster.local"
+          value: "backend7.backend7-ns.svc.cluster.local:5000"
         - name: LAMINAR_BALANCER_HOST
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_PORT
@@ -637,7 +637,7 @@ spec:
     spec:
       containers:
       - name:  backend8
-        image:  shieldxbot/backend:v0.1.16
+        image:  shieldxbot/backend:v0.1.19
         resources:
           requests:
             cpu: 300m
@@ -680,7 +680,7 @@ spec:
         - name : LAMINAR_REDIS_PORT
           value: "6379"
         - name: "BACKEND_ID"
-          value: "backend8.backend8-ns.svc.cluster.local"
+          value: "backend8.backend8-ns.svc.cluster.local:5000"
         - name: LAMINAR_BALANCER_HOST
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_PORT
@@ -721,7 +721,7 @@ spec:
     spec:
       containers:
       - name:  backend9
-        image:  shieldxbot/backend:v0.1.16
+        image:  shieldxbot/backend:v0.1.19
         resources:
           requests:
             cpu: 300m
@@ -764,7 +764,7 @@ spec:
         - name : LAMINAR_REDIS_PORT
           value: "6379"
         - name: "BACKEND_ID"
-          value: "backend9.backend9-ns.svc.cluster.local"
+          value: "backend9.backend9-ns.svc.cluster.local:5000"
         - name: LAMINAR_BALANCER_HOST
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_PORT
@@ -805,7 +805,7 @@ spec:
     spec:
       containers:
       - name:  backend10
-        image:  shieldxbot/backend:v0.1.16
+        image:  shieldxbot/backend:v0.1.19
         resources:
           requests:
             cpu: 300m
@@ -848,7 +848,7 @@ spec:
         - name : LAMINAR_REDIS_PORT
           value: "6379"
         - name: "BACKEND_ID"
-          value: "backend10.backend10-ns.svc.cluster.local"
+          value: "backend10.backend10-ns.svc.cluster.local:5000"
         - name: LAMINAR_BALANCER_HOST
           value: "balancer.balancer-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_PORT
