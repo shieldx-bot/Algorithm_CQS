@@ -17,9 +17,10 @@ import (
 )
 
 var (
-	currentRate int64 = 1 // req/s mặc định
-	rdb         *redis.Client
-	latencyChan = make(chan float64, 10000) // miliseconds
+	currentRate   int64 = 1 // req/s mặc định
+	totalRequests int64 = 0
+	rdb           *redis.Client
+	latencyChan   = make(chan float64, 10000) // miliseconds
 )
 
 func init() {
@@ -169,6 +170,7 @@ var (
 )
 
 func sendRequest() {
+	atomic.AddInt64(&totalRequests, 1)
 	start := time.Now()
 	// Gửi request tới Balancer
 	target := "http://" + balancerHost + ":" + balancerPort + "/query"
@@ -189,12 +191,35 @@ func sendRequest() {
 	defer resp.Body.Close()
 	io.ReadAll(resp.Body) // Đọc hết body để tái sử dụng connection
 }
+func runScenario() {
+	log.Println("Starting Scenario: Phase 1 (1 req/s for 5m)")
+	atomic.StoreInt64(&currentRate, 1)
+	time.Sleep(5 * time.Minute)
+
+	log.Println("Starting Scenario: Phase 2 (100 req/s for 5m)")
+	atomic.StoreInt64(&currentRate, 100)
+	time.Sleep(5 * time.Minute)
+
+	log.Println("Starting Scenario: Phase 3 (1000 req/s until 500k requests)")
+	atomic.StoreInt64(&currentRate, 1000)
+
+	for {
+		reqs := atomic.LoadInt64(&totalRequests)
+		if reqs >= 500000 {
+			log.Printf("Reached %d requests. Stopping.", reqs)
+			atomic.StoreInt64(&currentRate, 0)
+			break
+		}
+		time.Sleep(1 * time.Second)
+	}
+}
 
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Error loading .env file, proceeding with environment variables")
 	}
+	go runScenario()
 
 	balancerHost = os.Getenv("LAMINAR_BALANCER_HOST")
 	balancerPort = os.Getenv("LAMINAR_BALANCER_PORT")
