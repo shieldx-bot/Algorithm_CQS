@@ -24,7 +24,7 @@ var Backend BackendType = BackendType{
 	ID:   os.Getenv("BACKEND_ID"),
 	Beta: 0.1,
 	Redis: redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: os.Getenv("LAMINAR_REDIS_HOST"),
 	}),
 }
 
