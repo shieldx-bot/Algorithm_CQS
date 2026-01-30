@@ -18,6 +18,9 @@ delete:
 	kubectl delete -f kubernetes/Deployment/Client/Deployment.yaml
 	kubectl delete -f kubernetes/Deployment/Backend/Deployment.yaml
 	
+ns: 
+   kubectl apply -f kubernetes/Deployment/Balancer/CreateNS.yaml
+   
 
 
 apply:

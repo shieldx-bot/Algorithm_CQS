@@ -16,3 +16,9 @@
 
 
 ## kubectl -n monitoring delete pod prometheus-monitoring-kube-prometheus-prometheus-0
+
+
+
+
+
+## cách export google cloud redis về  laptop 
