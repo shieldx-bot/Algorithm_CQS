@@ -26,7 +26,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  balancer
-        image:  shieldxbot/balancer:v0.1.21
+        image:  shieldxbot/balancer:v0.1.22
         resources:
           requests:
             cpu: 500m
