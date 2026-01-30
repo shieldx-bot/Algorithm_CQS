@@ -7,28 +7,12 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/redis/go-redis/v9"
 )
-
-func createRedisClient() *redis.Client {
-	addr := os.Getenv("LAMINAR_REDIS_HOST")
-	if strings.HasPrefix(addr, "redis://") {
-		opt, err := redis.ParseURL(addr)
-		if err != nil {
-			log.Fatalf("Invalid redis URL: %v", err)
-		}
-		return redis.NewClient(opt)
-	}
-	return redis.NewClient(&redis.Options{
-		Addr: addr,
-	})
-}
 
 type LoadBalancer struct {
 	Redis  *redis.Client
@@ -38,7 +22,9 @@ type LoadBalancer struct {
 }
 
 var lb LoadBalancer = LoadBalancer{
-	Redis:  createRedisClient(),
+	Redis: redis.NewClient(&redis.Options{
+		Addr: "redis.postgre-db.svc.cluster.local:6379",
+	}),
 	Lambda: 0.5,
 	Eta:    0.5,
 	Delta:  0.1,
@@ -46,17 +32,18 @@ var lb LoadBalancer = LoadBalancer{
 
 func (lb *LoadBalancer) HandleClient(w http.ResponseWriter, r *http.Request) {
 	backendID := lb.selectBackend()
-	if backendID == "" {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		return
-	}
 
 	// Thống kê số lần chọn backend (chạy async để không chặn request chính)
 	go func(id string) {
 		lb.Redis.Incr(context.Background(), "node:"+id+":selected")
 	}(backendID)
 
-	resp, _ := http.Get("http://" + backendID + "/query")
+	resp, err := http.Get("http://" + backendID + "/query")
+	if err != nil {
+		log.Printf("Error contacting backend %s: %v", backendID, err)
+		w.WriteHeader(http.StatusServiceUnavailable)
+		return
+	}
 
 	if resp != nil && resp.Body != nil {
 		body, _ := io.ReadAll(resp.Body)
@@ -137,10 +124,6 @@ func (lb *LoadBalancer) ControlLoop() {
 func (lb *LoadBalancer) selectBackend() string {
 	ctx := context.Background()
 	nodes, _ := lb.Redis.SMembers(ctx, "nodes:active").Result()
-
-	if len(nodes) == 0 {
-		return ""
-	}
 
 	if len(nodes) == 1 {
 		return nodes[0]
