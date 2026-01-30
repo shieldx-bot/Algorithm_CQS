@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"sort"
-	"strings"
 	"sync/atomic"
 	"time"
 
@@ -24,18 +23,9 @@ var (
 )
 
 func init() {
-	addr := os.Getenv("LAMINAR_REDIS_HOST")
-	if strings.HasPrefix(addr, "redis://") {
-		opt, err := redis.ParseURL(addr)
-		if err != nil {
-			log.Fatalf("Invalid redis URL: %v", err)
-		}
-		rdb = redis.NewClient(opt)
-	} else {
-		rdb = redis.NewClient(&redis.Options{
-			Addr: addr,
-		})
-	}
+	rdb = redis.NewClient(&redis.Options{
+		Addr: "redis.postgre-db.svc.cluster.local:6379",
+	})
 }
 
 // updateMinMax helper to update min/max in Redis
@@ -173,10 +163,16 @@ func requestWorker() {
 	}
 }
 
+var (
+	balancerHost string
+	balancerPort string
+)
+
 func sendRequest() {
 	start := time.Now()
 	// Gửi request tới Balancer
-	resp, err := http.Get("http://" + os.Getenv("LAMINAR_BALANCER_HOST") + ":" + os.Getenv("LAMINAR_BALANCER_PORT") + "/query")
+	target := "http://" + balancerHost + ":" + balancerPort + "/query"
+	resp, err := http.Get(target)
 	latency := float64(time.Since(start).Milliseconds())
 
 	if err != nil {
@@ -198,6 +194,17 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Error loading .env file, proceeding with environment variables")
+	}
+
+	balancerHost = os.Getenv("LAMINAR_BALANCER_HOST")
+	balancerPort = os.Getenv("LAMINAR_BALANCER_PORT")
+
+	// Set defaults if env vars are missing (optional but good practice)
+	if balancerHost == "" {
+		balancerHost = "localhost"
+	}
+	if balancerPort == "" {
+		balancerPort = "8085"
 	}
 
 	// Start background worker sending requests
