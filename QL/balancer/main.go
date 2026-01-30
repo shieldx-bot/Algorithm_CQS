@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
@@ -19,12 +20,32 @@ type LoadBalancer struct {
 	Delta  float64
 }
 
+var lb LoadBalancer = LoadBalancer{
+	Redis: redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	}),
+	Lambda: 0.5,
+	Eta:    0.5,
+	Delta:  0.1,
+}
+
 func (lb *LoadBalancer) HandleClient(w http.ResponseWriter, r *http.Request) {
 	backendID := lb.selectBackend()
+
+	// Thống kê số lần chọn backend (chạy async để không chặn request chính)
+	go func(id string) {
+		lb.Redis.Incr(context.Background(), "node:"+id+":selected")
+	}(backendID)
+
 	resp, _ := http.Get("http://" + backendID + "/query")
 
-	body, _ := io.ReadAll(resp.Body)
-	w.Write(body)
+	if resp != nil && resp.Body != nil {
+		body, _ := io.ReadAll(resp.Body)
+		w.Write(body)
+		resp.Body.Close()
+	} else {
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}
 }
 func (lb *LoadBalancer) SnapshotNode(id string) (jobs []float64, ema float64) {
 	ctx := context.Background()
@@ -129,4 +150,12 @@ func (lb *LoadBalancer) selectBackend() string {
 
 func main() {
 
+	http.HandleFunc("/query", lb.HandleClient)
+	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong balancer"))
+	})
+	go lb.ControlLoop()
+	fmt.Println("Load Balancer listening on :8085")
+
+	http.ListenAndServe(":8085", nil)
 }
