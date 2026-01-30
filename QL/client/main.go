@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -23,9 +24,18 @@ var (
 )
 
 func init() {
-	rdb = redis.NewClient(&redis.Options{
-		Addr: os.Getenv("LAMINAR_REDIS_HOST"),
-	})
+	addr := os.Getenv("LAMINAR_REDIS_HOST")
+	if strings.HasPrefix(addr, "redis://") {
+		opt, err := redis.ParseURL(addr)
+		if err != nil {
+			log.Fatalf("Invalid redis URL: %v", err)
+		}
+		rdb = redis.NewClient(opt)
+	} else {
+		rdb = redis.NewClient(&redis.Options{
+			Addr: addr,
+		})
+	}
 }
 
 // updateMinMax helper to update min/max in Redis

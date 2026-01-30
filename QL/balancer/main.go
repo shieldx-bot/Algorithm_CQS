@@ -4,15 +4,31 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/redis/go-redis/v9"
 )
+
+func createRedisClient() *redis.Client {
+	addr := os.Getenv("LAMINAR_REDIS_HOST")
+	if strings.HasPrefix(addr, "redis://") {
+		opt, err := redis.ParseURL(addr)
+		if err != nil {
+			log.Fatalf("Invalid redis URL: %v", err)
+		}
+		return redis.NewClient(opt)
+	}
+	return redis.NewClient(&redis.Options{
+		Addr: addr,
+	})
+}
 
 type LoadBalancer struct {
 	Redis  *redis.Client
@@ -22,9 +38,7 @@ type LoadBalancer struct {
 }
 
 var lb LoadBalancer = LoadBalancer{
-	Redis: redis.NewClient(&redis.Options{
-		Addr: os.Getenv("LAMINAR_REDIS_HOST"),
-	}),
+	Redis:  createRedisClient(),
 	Lambda: 0.5,
 	Eta:    0.5,
 	Delta:  0.1,
