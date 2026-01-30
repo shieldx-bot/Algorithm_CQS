@@ -145,8 +145,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	defaultVPS := []VPS{
-		{IP: "34.87.59.164"},
-		{IP: "34.158.51.160"},
+		{IP: "localhost"},
 	}
 	if env := strings.TrimSpace(os.Getenv("RL_VPS")); env != "" {
 		parts := strings.Split(env, ",")
