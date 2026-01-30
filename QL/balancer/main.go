@@ -6,6 +6,7 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"os"
 	"sort"
 	"strconv"
 	"time"
@@ -22,7 +23,7 @@ type LoadBalancer struct {
 
 var lb LoadBalancer = LoadBalancer{
 	Redis: redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: os.Getenv("LAMINAR_REDIS_HOST"),
 	}),
 	Lambda: 0.5,
 	Eta:    0.5,
