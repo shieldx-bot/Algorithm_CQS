@@ -65,9 +65,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "BACKEND_ID"
           value: "backend.backend-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
@@ -156,9 +156,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "BACKEND_ID"
           value: "backend2.backend2-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
@@ -247,9 +247,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "BACKEND_ID"
           value: "backend3.backend3-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
@@ -335,9 +335,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "BACKEND_ID"
           value: "backend4.backend4-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
@@ -424,9 +424,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "BACKEND_ID"
           value: "backend5.backend5-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
@@ -508,9 +508,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "BACKEND_ID"
           value: "backend6.backend6-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
@@ -592,9 +592,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "BACKEND_ID"
           value: "backend7.backend7-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
@@ -676,9 +676,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "BACKEND_ID"
           value: "backend8.backend8-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
@@ -760,9 +760,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "BACKEND_ID"
           value: "backend9.backend9-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
@@ -844,9 +844,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "BACKEND_ID"
           value: "backend10.backend10-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST

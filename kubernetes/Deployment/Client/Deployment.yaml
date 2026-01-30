@@ -65,9 +65,9 @@ spec:
         - name: LAMINAR_DB_PASSWORD
           value: "Vananh12345"  
         - name : LAMINAR_REDIS_HOST
-          value: "redis://redis.postgre-db.svc.cluster.local:6379"
+          value: "redis://redis.postgre-db.svc.cluster.local:6380"
         - name : LAMINAR_REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: "MY_IP_PUBLIC"
           value: "client.client-ns.svc.cluster.local"
         - name: LAMINAR_BALANCER_HOST
