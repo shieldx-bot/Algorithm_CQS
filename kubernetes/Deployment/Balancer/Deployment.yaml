@@ -26,14 +26,14 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  balancer
-        image:  shieldxbot/balancer:v0.1.19
+        image:  shieldxbot/balancer:v0.1.21
         resources:
           requests:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 300m
-            memory: 300Mi
+            cpu: 500m
+            memory: 500Mi
         livenessProbe:
           tcpSocket:
             port: 8085
