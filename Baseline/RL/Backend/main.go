@@ -9,30 +9,43 @@ import (
 	"os"
 	"sync/atomic"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 var (
-	balancerURL = "http://localhost:8084"
-	myIP        = "localhost"
+	balancerURL = "http://balancer.balancer-ns.svc.cluster.local:8085"
+	myIP        = os.Getenv("BACKEND_ID")
 	queueSize   int64
 )
 
 func main() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file, proceeding with environment variables")
+	}
 	if v := os.Getenv("BALANCER_URL"); v != "" {
 		balancerURL = v
+	} else {
+		host := os.Getenv("LAMINAR_BALANCER_HOST")
+		port := os.Getenv("LAMINAR_BALANCER_PORT")
+		if host != "" && port != "" {
+			balancerURL = "http://" + host + ":" + port
+		}
 	}
-	if v := os.Getenv("MY_IP"); v != "" {
+	if v := os.Getenv("BACKEND_ID"); v != "" {
 		myIP = v
 	}
-	port := "8081"
-	if v := os.Getenv("PORT"); v != "" {
-		port = v
-	}
 
+	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("pong"))
+	})
 	http.HandleFunc("/TestHTTP3", handleRequest)
 
-	log.Printf("Backend listening on :%s, reporting to %s as %s", port, balancerURL, myIP)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Printf("Backend listening on :5000, reporting to %s as %s", balancerURL, myIP)
+	log.Fatal(http.ListenAndServe(":5000", nil))
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
