@@ -1,0 +1,65 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /ping                     --> main.main.func1 (3 handlers)
+[GIN-debug] GET    /debug/state              --> main.main.func2 (3 handlers)
+[GIN-debug] POST   /load-test-http3          --> main.main.func3 (3 handlers)
+[GIN-debug] POST   /receive-metrics          --> main.main.func4 (3 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8084
+[GIN] 2026/01/31 - 08:06:47 | 200 |   106.17412ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:47 | 200 |     1.48803ms |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:48 | 200 |  100.756241ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:48 | 200 |     110.035µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:49 | 200 |  101.993276ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:49 | 200 |     268.887µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:50 | 200 |  101.593568ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:50 | 200 |     694.584µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:51 | 200 |  101.265704ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:51 | 200 |     157.296µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:52 | 200 |  101.267022ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:52 | 200 |     142.478µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:53 | 200 |  101.312032ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:53 | 200 |     391.194µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:54 | 200 |  102.805394ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:54 | 200 |     364.799µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:55 | 200 |  101.681971ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:55 | 200 |     798.072µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:56 | 200 |  102.320771ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:56 | 200 |     448.925µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:57 | 200 |  101.888241ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:57 | 200 |     434.559µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:58 | 200 |  101.446426ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:58 | 200 |     404.528µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:06:59 | 200 |  102.003863ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:06:59 | 200 |     452.105µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:00 | 200 |  102.641147ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:00 | 200 |     548.015µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:01 | 200 |  102.241104ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:01 | 200 |     388.655µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:02 | 200 |   101.53827ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:02 | 200 |     591.244µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:03 | 200 |  102.058961ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:03 | 200 |      348.15µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:04 | 200 |  101.154954ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:04 | 200 |     288.348µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:05 | 200 |  101.350815ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:05 | 200 |     458.017µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:06 | 200 |  101.723699ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:06 | 200 |     272.976µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:07 | 200 |  101.725328ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:07 | 200 |     350.167µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:08 | 200 |  101.009081ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:08 | 200 |     322.293µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:09 | 200 |     288.436µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:09 | 200 |  102.897145ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:10 | 200 |  101.576321ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:10 | 200 |     276.147µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:11 | 200 |  101.365879ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:11 | 200 |     250.347µs |       127.0.0.1 | POST     "/receive-metrics"
+[GIN] 2026/01/31 - 08:07:12 | 200 |  101.063839ms |       127.0.0.1 | POST     "/load-test-http3"
+[GIN] 2026/01/31 - 08:07:12 | 200 |      85.344µs |       127.0.0.1 | POST     "/receive-metrics"
