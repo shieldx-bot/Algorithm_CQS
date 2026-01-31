@@ -26,7 +26,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend
-        image:  shieldxbot/backend:v0.1.22
+        image:  shieldxbot/backend:v0.1.26
         resources:
           requests:
             cpu: 500m
@@ -117,7 +117,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend2
-        image:  shieldxbot/backend:v0.1.22
+        image:  shieldxbot/backend:v0.1.26
         resources:
           requests:
             cpu: 500m
@@ -208,7 +208,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend3
-        image:  shieldxbot/backend:v0.1.22
+        image:  shieldxbot/backend:v0.1.26
         resources:
           requests:
             cpu: 500m
@@ -296,7 +296,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend4
-        image:  shieldxbot/backend:v0.1.22
+        image:  shieldxbot/backend:v0.1.26
         resources:
           requests:
             cpu: 500m
@@ -385,7 +385,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  backend5
-        image:  shieldxbot/backend:v0.1.22
+        image:  shieldxbot/backend:v0.1.26
         resources:
           requests:
             cpu: 500m
@@ -469,7 +469,7 @@ spec:
     spec:
       containers:
       - name:  backend6
-        image:  shieldxbot/backend:v0.1.22
+        image:  shieldxbot/backend:v0.1.26
         resources:
           requests:
             cpu: 500m
@@ -553,7 +553,7 @@ spec:
     spec:
       containers:
       - name:  backend7
-        image:  shieldxbot/backend:v0.1.22
+        image:  shieldxbot/backend:v0.1.26
         resources:
           requests:
             cpu: 500m
@@ -637,7 +637,7 @@ spec:
     spec:
       containers:
       - name:  backend8
-        image:  shieldxbot/backend:v0.1.22
+        image:  shieldxbot/backend:v0.1.26
         resources:
           requests:
             cpu: 500m
@@ -721,7 +721,7 @@ spec:
     spec:
       containers:
       - name:  backend9
-        image:  shieldxbot/backend:v0.1.22
+        image:  shieldxbot/backend:v0.1.26
         resources:
           requests:
             cpu: 500m
@@ -805,7 +805,7 @@ spec:
     spec:
       containers:
       - name:  backend10
-        image:  shieldxbot/backend:v0.1.22
+        image:  shieldxbot/backend:v0.1.26
         resources:
           requests:
             cpu: 500m
