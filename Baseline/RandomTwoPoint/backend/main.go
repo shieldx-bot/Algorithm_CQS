@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"sync/atomic"
 	"time"
@@ -169,7 +170,7 @@ func main() {
 			"data":   results,
 		})
 	})
-	
+
 	router.POST("/receive-metrics", func(c *gin.Context) {
 		// Just for compatibility if we want two-way comms, but backend only sends.
 	})
