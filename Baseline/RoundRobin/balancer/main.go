@@ -167,5 +167,37 @@ func main() {
 	// Support both routes to match Postman usage.
 	router.POST("/balance", handleBalance)
 
+	router.POST("/receive-metrics", func(c *gin.Context) {
+		type metricsIn struct {
+			TimeDoneTask int64  `json:"TimeDoneTask"`
+			IPVM         string `json:"ip_vm"`
+			TotalOnQueue int64  `json:"total_on_queue"`
+		}
+
+		var in metricsIn
+		if err := c.ShouldBindJSON(&in); err != nil {
+			c.JSON(400, gin.H{"error": "invalid json"})
+			return
+		}
+		ip := strings.TrimSpace(in.IPVM)
+		if ip != "" {
+			ctx := context.Background()
+			// Recording backend metrics to Redis to match QL/RL observability expectations
+			// QL uses node:ID:q for queue size and node:ID:ema (calculated) for latency.
+			// Currently just logging raw values or setting simple keys.
+
+			// Write Queue Size
+			rdb.Set(ctx, "node:"+ip+":q", in.TotalOnQueue, 0)
+
+			// For visualization, we might want the latency too.
+			// There isn't a standard "latency" key in QL (it uses EMA).
+			// But we can store it for debug/dashboard if needed.
+			// Let's stick to what we know QL/RL use. QL uses node:ID:q.
+			// We will at least provide that.
+		}
+
+		c.JSON(200, gin.H{"status": "ok"})
+	})
+
 	_ = router.Run(":8085")
 }
