@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"time"
 
@@ -109,6 +110,12 @@ func main() {
 		TimeStart time.Time `json:"time_start"`
 		Query     string    `json:"query,omitempty"`
 	}
+
+	router.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 	router.POST("/process", func(c *gin.Context) {
 		var jsonData ProcessRequest
 		if err := c.ShouldBindJSON(&jsonData); err != nil {
@@ -118,6 +125,10 @@ func main() {
 			})
 			return
 		}
+
+		// giả lập SQL query
+		execTime := time.Duration(rand.Intn(300)+200) * time.Millisecond
+		time.Sleep(execTime)
 
 		results, err := ExecuteSQLQery(jsonData.Query, db)
 		if err != nil {
