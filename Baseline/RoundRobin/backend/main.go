@@ -1,17 +1,27 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
+	"sync/atomic"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 	"google.golang.org/protobuf/types/known/structpb"
+)
+
+var (
+	balancerURL = "http://balancer.balancer-ns.svc.cluster.local:8085"
+	myIP        = os.Getenv("BACKEND_ID")
+	queueSize   int64
 )
 
 type ExampleRecord struct {
@@ -75,6 +85,13 @@ func main() {
 	if err != nil {
 		log.Println("Error loading .env file, proceeding with environment variables")
 	}
+	if v := os.Getenv("BALANCER_URL"); v != "" {
+		balancerURL = v
+	}
+	if v := os.Getenv("BACKEND_ID"); v != "" {
+		myIP = v
+	}
+
 	var host_database = os.Getenv("LAMINAR_DB_HOST")
 	var port_database = os.Getenv("LAMINAR_DB_PORT")
 	var user_database = os.Getenv("LAMINAR_DB_USER")
@@ -126,6 +143,10 @@ func main() {
 			return
 		}
 
+		atomic.AddInt64(&queueSize, 1)
+		start := time.Now()
+		defer atomic.AddInt64(&queueSize, -1)
+
 		// giả lập SQL query
 		execTime := time.Duration(rand.Intn(300)+200) * time.Millisecond
 		time.Sleep(execTime)
@@ -139,11 +160,43 @@ func main() {
 			return
 		}
 
+		doneTime := time.Since(start).Milliseconds()
+		go sendMetrics(doneTime)
+
 		fmt.Printf("Received JSON: %v\n", jsonData)
 		c.JSON(200, gin.H{
 			"status": "processed",
 			"data":   results,
 		})
 	})
+	router.POST("/receive-metrics", func(c *gin.Context) {
+		// Just for compatibility if we want two-way comms, but backend only sends.
+	})
+
 	router.Run(":5000")
+}
+
+func sendMetrics(doneTimeMs int64) {
+	payload := map[string]interface{}{
+		"TimeDoneTask":   doneTimeMs,
+		"TimeStartSend":  time.Now().UnixMilli(),
+		"Penumj":         0,
+		"Pemips":         0,
+		"NumberTask":     1,
+		"ttj":            0.0,
+		"tli":            0,
+		"ip_vm":          myIP,
+		"ifs":            0,
+		"vmbw":           0.0,
+		"total_on_queue": atomic.LoadInt64(&queueSize),
+	}
+
+	body, _ := json.Marshal(payload)
+	// Note: using /receive-metrics to match RL balancer endpoint
+	resp, err := http.Post(balancerURL+"/receive-metrics", "application/json", bytes.NewReader(body))
+	if err != nil {
+		log.Printf("Failed to send metrics: %v", err)
+		return
+	}
+	defer resp.Body.Close()
 }
