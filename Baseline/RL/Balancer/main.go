@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,6 +15,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 
 	"github/shieldx-bot/RL/rl"
 )
@@ -55,7 +57,28 @@ var (
 
 	dispatchStateByIP = map[string]*stateQueue{}
 	qtable            = rl.NewQTable()
+	rdb               *redis.Client
 )
+
+func init() {
+	redisHost := os.Getenv("LAMINAR_REDIS_HOST")
+	redisPort := os.Getenv("LAMINAR_REDIS_PORT")
+
+	var redisAddr string
+	if redisHost == "" {
+		redisAddr = "redis.postgre-db.svc.cluster.local:6379"
+	} else {
+		// remove redis:// prefix if present
+		host := strings.TrimPrefix(redisHost, "redis://")
+		if redisPort == "" {
+			redisPort = "6379"
+		}
+		redisAddr = host + ":" + redisPort
+	}
+	rdb = redis.NewClient(&redis.Options{
+		Addr: redisAddr,
+	})
+}
 
 func getenvFloat(name string, def float64) float64 {
 	v := strings.TrimSpace(os.Getenv(name))
@@ -145,7 +168,16 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	defaultVPS := []VPS{
-		{IP: "localhost"},
+		{IP: "backend.backend-ns.svc.cluster.local:5000"},
+		{IP: "backend2.backend2-ns.svc.cluster.local:5000"},
+		{IP: "backend3.backend3-ns.svc.cluster.local:5000"},
+		{IP: "backend4.backend4-ns.svc.cluster.local:5000"},
+		{IP: "backend5.backend5-ns.svc.cluster.local:5000"},
+		{IP: "backend6.backend6-ns.svc.cluster.local:5000"},
+		{IP: "backend7.backend7-ns.svc.cluster.local:5000"},
+		{IP: "backend8.backend8-ns.svc.cluster.local:5000"},
+		{IP: "backend9.backend9-ns.svc.cluster.local:5000"},
+		{IP: "backend10.backend10-ns.svc.cluster.local:5000"},
 	}
 	if env := strings.TrimSpace(os.Getenv("RL_VPS")); env != "" {
 		parts := strings.Split(env, ",")
@@ -174,7 +206,10 @@ func main() {
 	epsilon := getenvFloat("RL_EPSILON", 0.10)
 	alpha := getenvFloat("RL_ALPHA", 0.20)
 	maxQueue := getenvInt("RL_MAX_QUEUE", 1000)
-	port := getenvString("RL_PORT", "8084")
+	port := getenvString("RL_PORT", "")
+	if port == "" {
+		port = getenvString("LAMINAR_BALANCER_PORT", "8085")
+	}
 
 	router := gin.Default()
 
@@ -212,9 +247,16 @@ func main() {
 		}
 		ensureDispatchQueue(ip).Push(state)
 
+		// Thống kê số lượng request tới mỗi backend (async)
+		go func(targetIP string) {
+			// Extract host from "host:port" if necessary, but QL uses the full ID usually.
+			// QL uses "node:"+id+":selected". The "id" in RL is the IP:Port string.
+			rdb.Incr(context.Background(), "node:"+targetIP+":selected")
+		}(ip)
+
 		req, err := http.NewRequest(
 			http.MethodPost,
-			"http://"+ip+":8081/TestHTTP3",
+			"http://"+ip+"/TestHTTP3",
 			bytes.NewReader(bodyBytes),
 		)
 		if err != nil {
