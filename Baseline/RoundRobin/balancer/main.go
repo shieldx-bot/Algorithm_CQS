@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"sync/atomic"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 )
 
 type Server struct {
@@ -19,11 +21,40 @@ type Server struct {
 }
 
 var server = []Server{
-	{IP: "localhost:6001"},
-	{IP: "localhost:5000"},
+	{IP: "backend.backend-ns.svc.cluster.local:5000"},
+	{IP: "backend2.backend2-ns.svc.cluster.local:5000"},
+	{IP: "backend3.backend3-ns.svc.cluster.local:5000"},
+	{IP: "backend4.backend4-ns.svc.cluster.local:5000"},
+	{IP: "backend5.backend5-ns.svc.cluster.local:5000"},
+	{IP: "backend6.backend6-ns.svc.cluster.local:5000"},
+	{IP: "backend7.backend7-ns.svc.cluster.local:5000"},
+	{IP: "backend8.backend8-ns.svc.cluster.local:5000"},
+	{IP: "backend9.backend9-ns.svc.cluster.local:5000"},
+	{IP: "backend10.backend10-ns.svc.cluster.local:5000"},
 }
 
 var rrCounter uint64
+var rdb *redis.Client
+
+func init() {
+	redisHost := os.Getenv("LAMINAR_REDIS_HOST")
+	redisPort := os.Getenv("LAMINAR_REDIS_PORT")
+
+	var redisAddr string
+	if redisHost == "" {
+		redisAddr = "redis.postgre-db.svc.cluster.local:6379"
+	} else {
+		// remove redis:// prefix if present
+		host := strings.TrimPrefix(redisHost, "redis://")
+		if redisPort == "" {
+			redisPort = "6379"
+		}
+		redisAddr = host + ":" + redisPort
+	}
+	rdb = redis.NewClient(&redis.Options{
+		Addr: redisAddr,
+	})
+}
 
 type Frequency struct {
 	Count int64     // internal counter
@@ -87,6 +118,11 @@ func handleBalance(c *gin.Context) {
 	for i := 0; i < len(server); i++ {
 		idx := (start + i) % len(server)
 		backend := server[idx].IP
+
+		// Thống kê số lượng request tới mỗi backend (async)
+		go func(targetIP string) {
+			rdb.Incr(context.Background(), "node:"+targetIP+":selected")
+		}(backend)
 
 		status, body, err := forwardToBackend(ctx, backend, payload)
 		if err != nil {
