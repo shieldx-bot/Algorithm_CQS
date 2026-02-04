@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"sort"
 	"strconv"
 	"time"
@@ -38,9 +39,16 @@ func (lb *LoadBalancer) HandleClient(w http.ResponseWriter, r *http.Request) {
 		lb.Redis.Incr(context.Background(), "node:"+id+":selected")
 	}(backendID)
 
-	resp, err := http.Get("http://" + backendID + "/query")
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+	resp, err := client.Get("http://" + backendID + "/query")
 	if err != nil {
 		log.Printf("Error contacting backend %s: %v", backendID, err)
+		lb.Redis.Incr(context.Background(), "node:"+backendID+":failed")
+		if os.IsTimeout(err) {
+			lb.Redis.Incr(context.Background(), "node:"+backendID+":timeout")
+		}
 		w.WriteHeader(http.StatusServiceUnavailable)
 		return
 	}
@@ -165,6 +173,25 @@ func (lb *LoadBalancer) selectBackend() string {
 }
 
 func main() {
+	// Initialize metrics keys for known backends immediately
+	knownBackends := []string{
+		"backend.backend-ns.svc.cluster.local:5000",
+		"backend2.backend2-ns.svc.cluster.local:5000",
+		"backend3.backend3-ns.svc.cluster.local:5000",
+		"backend4.backend4-ns.svc.cluster.local:5000",
+		"backend5.backend5-ns.svc.cluster.local:5000",
+		"backend6.backend6-ns.svc.cluster.local:5000",
+		"backend7.backend7-ns.svc.cluster.local:5000",
+		"backend8.backend8-ns.svc.cluster.local:5000",
+		"backend9.backend9-ns.svc.cluster.local:5000",
+		"backend10.backend10-ns.svc.cluster.local:5000",
+	}
+	ctx := context.Background()
+	for _, id := range knownBackends {
+		lb.Redis.SetNX(ctx, "node:"+id+":failed", 0, 0)
+		lb.Redis.SetNX(ctx, "node:"+id+":timeout", 0, 0)
+		lb.Redis.SetNX(ctx, "node:"+id+":selected", 0, 0)
+	}
 
 	http.HandleFunc("/query", lb.HandleClient)
 	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
